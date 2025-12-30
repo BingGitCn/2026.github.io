@@ -2,7 +2,7 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>2026 新年倒计时 - 互动版</title>
     
     <!-- 引入 Google Fonts 字体 -->
@@ -23,23 +23,27 @@
             --input-bg: rgba(15, 23, 42, 0.6);  /* 输入框背景 */
             --trail-color: rgba(15, 23, 42, 0.15); /* 烟花拖尾色 */
         }
-  
+
         * {
             box-sizing: border-box;
             margin: 0;
             padding: 0;
             user-select: none;
+            -webkit-tap-highlight-color: transparent; /* 移除移动端点击高亮 */
         }
 
         body {
             font-family: 'ZCOOL XiaoWei', serif;
-            /* ✅ 修复：使用变量，不再是硬编码的红色 */
             background: linear-gradient(135deg, 
                 var(--bg-gradient-1) 0%, 
                 var(--bg-gradient-2) 50%, 
                 var(--bg-gradient-3) 100%);
             color: var(--text-color);
-            height: 100vh;
+            /* ✅ 修复：使用 dvh (Dynamic Viewport Height) 适配移动端浏览器地址栏 */
+            height: 100dvh;
+            /* 兼容性回退 */
+            min-height: 100vh;
+            
             overflow: hidden;
             display: flex;
             flex-direction: column;
@@ -96,6 +100,7 @@
             height: 100%;
             z-index: 0;
             cursor: pointer;
+            touch-action: none; /* 防止触摸滚动 */
         }
 
         #danmu-container {
@@ -159,6 +164,7 @@
             background: var(--glass-bg);
             border: 1px solid var(--border-color);
             backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
             border-radius: 12px;
             padding: 20px;
             min-width: 100px;
@@ -184,7 +190,7 @@
 
         .time-label {
             font-size: 1.2rem;
-            color: rgba(255,255,255,0.7); /* 调整标签颜色 */
+            color: rgba(255,255,255,0.7); 
             text-transform: uppercase;
             letter-spacing: 2px;
             font-family: 'ZCOOL XiaoWei', serif;
@@ -192,15 +198,16 @@
 
         .input-area {
             position: fixed;
-            bottom: 30px;
+            /* ✅ 修复：使用 safe-area-inset-bottom 适配全面屏底部黑条 */
+            bottom: calc(30px + env(safe-area-inset-bottom));
             left: 50%;
             transform: translateX(-50%);
             z-index: 20;
             width: 90%;
             max-width: 600px;
-            /* ✅ 修复：使用变量 */
             background: var(--input-bg);
             backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px); /* iOS 兼容 */
             border: 1px solid var(--border-color);
             border-radius: 50px;
             padding: 10px 10px 10px 20px;
@@ -259,15 +266,54 @@
             transform: scale(0.95);
         }
 
+        /* =========================================
+           ✅ 移动端响应式优化
+           ========================================= */
         @media (max-width: 768px) {
-            h1 { font-size: 2.5rem; letter-spacing: 4px; }
-            .countdown-wrapper { gap: 10px; }
-            .time-box { min-width: 70px; padding: 10px; }
+            h1 { 
+                font-size: 2.5rem; 
+                letter-spacing: 2px; /* 减小字间距防止换行 */
+                margin-bottom: 1.5rem;
+            }
+            .countdown-wrapper { 
+                gap: 10px; 
+                width: 95%; /* 限制最大宽度，防止贴边 */
+            }
+            .time-box { 
+                min-width: 65px; /* 稍微减小最小宽度 */
+                padding: 10px 5px; /* 减小左右内边距 */
+            }
             .time-number { font-size: 2rem; }
-            .time-label { font-size: 1rem; }
+            .time-label { font-size: 0.9rem; }
             .danmu-item { font-size: 1rem; }
             .pray-btn { padding: 10px 15px; }
             .send-btn { padding: 10px 15px; }
+        }
+
+        /* 针对超小屏幕 (iPhone SE 等) 的额外优化 */
+        @media (max-width: 380px) {
+            h1 { font-size: 2rem; margin-bottom: 1rem; }
+            .countdown-wrapper { gap: 5px; }
+            .time-box { 
+                padding: 5px 2px; 
+                min-width: 55px; /* 强制缩小宽度以容纳4个格子 */
+            }
+            .time-number { font-size: 1.5rem; }
+            .time-label { font-size: 0.7rem; }
+            
+            .input-area {
+                width: 95%;
+                padding: 8px 8px 8px 15px; /* 缩小输入框内边距 */
+            }
+            
+            .send-btn, .pray-btn {
+                padding: 8px 12px;
+                font-size: 0.9rem;
+            }
+            
+            input::placeholder {
+                font-size: 0.9rem;
+            }
         }
     </style>
 </head>
@@ -444,7 +490,7 @@
 
         function loop() {
             requestAnimationFrame(loop);
-            // ✅ 修复：使用变量
+            // 使用 CSS 变量读取拖尾色
             ctx.fillStyle = getComputedStyle(document.documentElement).getPropertyValue('--trail-color').trim() || 'rgba(15, 23, 42, 0.15)';
             ctx.fillRect(0, 0, canvas.width, canvas.height);
 
@@ -473,6 +519,8 @@
         });
         
         canvas.addEventListener('touchstart', (e) => {
+            // 阻止默认事件，防止触摸时页面滚动
+            // e.preventDefault(); 
             for (let i = 0; i < e.touches.length; i++) {
                 createExplosion(e.touches[i].clientX, e.touches[i].clientY);
             }
@@ -485,42 +533,40 @@
         const LOCAL_STORAGE_KEY = 'my_2026_danmu_history';
 
         const defaultMessages = [
-				// 原有内容（保留不变）
-				"2026 加油！✨", "愿世界和平 🕊️", "暴富暴富 💰", 
-				"前程似锦 🚀", "身体健康 💪", "万事如意 🍎", 
-				"Hello 2026!", "好运连连 🍀", "新年快乐 🎉",
-				"平安喜乐", "万事胜意", "心想事成", "财源广进",
-				"Good Luck!", "未来可期", "不止不休", "岁岁平安",
-				"工作顺利", "学业有成", "大吉大利", "Bug Free",
-				"发量惊人", "早日退休", "升职加薪", "Flag不倒",
-				"暴瘦十斤", "桃花朵朵", "吃嘛嘛香", "好运加倍",
-				"百无禁忌", "诸事顺遂", "日进斗金", "快乐无边",
+                "2026 加油！✨", "愿世界和平 🕊️", "暴富暴富 💰", 
+                "前程似锦 🚀", "身体健康 💪", "万事如意 🍎", 
+                "Hello 2026!", "好运连连 🍀", "新年快乐 🎉",
+                "平安喜乐", "万事胜意", "心想事成", "财源广进",
+                "Good Luck!", "未来可期", "不止不休", "岁岁平安",
+                "工作顺利", "学业有成", "大吉大利", "Bug Free",
+                "发量惊人", "早日退休", "升职加薪", "Flag不倒",
+                "暴瘦十斤", "桃花朵朵", "吃嘛嘛香", "好运加倍",
+                "百无禁忌", "诸事顺遂", "日进斗金", "快乐无边",
 
-				// 新增内容（风格统一，轻松有趣又温暖）
-				"代码无 bug，上线不回滚 💻", 
-				"睡到自然醒 😴", 
-				"钱包鼓鼓，烦恼空空 🎒", 
-				"天天开心，没有 KPI 😄",  
-				"躺赢人生 🛋️", 
-				"灵感爆棚 ✨",    
-				"奶茶自由 🧋", 
-				"旅行说走就走 ✈️", 
-				"被爱包围 ❤️", 
-				"小目标全达成 🎯", 
-				"情绪稳定，心态超好 🧘‍♀️", 
-				"早睡早起，精神百倍 ⏰",    
-				"追剧不拖更 📺", 
-				"阳光正好，微风不燥 ☀️", 
-				"每天都有小确幸 🌸", 
-				"No more overtime! 🙅‍♂️", 
-				"存款数字翻倍 💵", 
-				"家人安康，岁月静好 👨‍👩‍👧‍👦", 
-				"勇敢做自己 🦁", 
-				"好运加载100% 🔋", 
-				"笑口常开，好运自来 😊", 
-				"梦想成真，不止新年 🌈", 
-				"心怀热爱，奔赴山海 🏔️"
-			];
+                "代码无 bug，上线不回滚 💻", 
+                "睡到自然醒 😴", 
+                "钱包鼓鼓，烦恼空空 🎒", 
+                "天天开心，没有 KPI 😄",  
+                "躺赢人生 🛋️", 
+                "灵感爆棚 ✨",    
+                "奶茶自由 🧋", 
+                "旅行说走就走 ✈️", 
+                "被爱包围 ❤️", 
+                "小目标全达成 🎯", 
+                "情绪稳定，心态超好 🧘‍♀️", 
+                "早睡早起，精神百倍 ⏰",    
+                "追剧不拖更 📺", 
+                "阳光正好，微风不燥 ☀️", 
+                "每天都有小确幸 🌸", 
+                "No more overtime! 🙅‍♂️", 
+                "存款数字翻倍 💵", 
+                "家人安康，岁月静好 👨‍👩‍👧‍👦", 
+                "勇敢做自己 🦁", 
+                "好运加载100% 🔋", 
+                "笑口常开，好运自来 😊", 
+                "梦想成真，不止新年 🌈", 
+                "心怀热爱，奔赴山海 🏔️"
+            ];
 
         const colors = ['#FFD700', '#FFF8DC', '#ffffff', '#FCA5A5', '#FDE68A']; 
 
@@ -619,4 +665,3 @@
     </script>
 </body>
 </html>
-
