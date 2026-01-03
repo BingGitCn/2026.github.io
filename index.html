@@ -249,29 +249,33 @@
     @keyframes moveMountain { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
 
     /* --- 响应式调整 --- */
-    @media (max-width: 768px) {
-        /* 强制换行，自适应列宽 */
-        .dashboard-container { 
-            flex-direction: column; 
-            padding-bottom: 20px; 
-            align-items: center; 
-        }
-        .glass-card { width: 100%; max-width: 100%; }
-        
-        .list { width: 260px; }
-        .list ul { width: 250px; }
-        .sou ul li { padding: 0 12px; font-size: 12px; }
-        .poem-sentence { font-size: 20px; }
-        .time-clock { font-size: 2.5rem; }
-        #menu { width: 40px; padding: 0 10px; }
-        #menu span { display: none; }
-    }
-    @media (max-width: 480px) {
-        .landscape-container { height: 200px; }
-        .time-panel { margin-top: 20px; }
-        /* 手机端调整间距 */
-        .sou { margin: 10px 0; }
-    }
+	@media (max-width: 768px) {
+		/* 强制换行，自适应列宽 */
+		.dashboard-container { 
+			flex-direction: column; 
+			padding-bottom: 20px; 
+			align-items: center; 
+		}
+		.glass-card { width: 100%; max-width: 100%; }
+		
+		.list { width: 260px; }
+		.list ul { width: 250px; }
+		.sou ul li { padding: 0 12px; font-size: 12px; }
+		.poem-sentence { font-size: 20px; }
+		.time-clock { font-size: 2.5rem; }
+		#menu { width: 40px; padding: 0 10px; }
+		#menu span { display: none; }
+
+		/* ---------------------------------------------------- */
+		/* 【新增部分】修复手机端顶部文字不显示的问题 */
+		/* ---------------------------------------------------- */
+		#content {
+			justify-content: flex-start; /* 改为从顶部开始排列，而不是垂直居中 */
+			padding-top: 30px;           /* 增加顶部内边距，防止内容紧贴状态栏 */
+		}
+		/* ---------------------------------------------------- */
+	}
+
   </style>
 </head>
 <body>
