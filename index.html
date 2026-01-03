@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
   <meta http-equiv="Cache-Control" content="no-siteapp">
-  <title>有Bing呀 · 极简版</title>
+  <title>有Bing呀 · 搜一下</title>
   
   <!-- 引入 Ma Shan Zheng (马善政) 书法字体 -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -39,12 +39,33 @@
     .icon-svg { width: 1em; height: 1em; fill: currentColor; vertical-align: middle; margin-right: 4px; }
 
     /* --- 背景色 --- */
-    .bg-lotus { background: #f3e9d2; --theme-color: #f3e9d2; } 
-    .bg-apricot { background: #e0d7c5; --theme-color: #e0d7c5; } 
-    .bg-bamboo { background: #d4e4bc; --theme-color: #d4e4bc; } 
-    .bg-cloud { background: #e8f4f8; --theme-color: #e8f4f8; } 
-    .bg-peach { background: #fde2e4; --theme-color: #fde2e4; } 
-    .bg-autumn { background: #ead2ac; --theme-color: #ead2ac; }
+	/* 暖色系 */
+	.bg-lotus { background: #f3e9d2; --theme-color: #f3e9d2; }      /* 莲花米 */
+	.bg-apricot { background: #e0d7c5; --theme-color: #e0d7c5; }   /* 杏色 */
+	.bg-peach { background: #fde2e4; --theme-color: #fde2e4; }     /* 桃粉 */
+	.bg-autumn { background: #ead2ac; --theme-color: #ead2ac; }   /* 秋黄 */
+	.sunset { background: #ffecd2; --theme-color: #ffecd2; }        /* 夕阳橙 */
+	.goose { background: #fef9e7; --theme-color: #fef9e7; }        /* 鹅黄 */
+	.rose { background: #fce4ec; --theme-color: #fce4ec; }         /* 玫瑰粉 */
+
+	/* 绿色系 */
+	.bg-bamboo { background: #d4e4bc; --theme-color: #d4e4bc; }    /* 竹绿 */
+	.mint { background: #e8f5e9; --theme-color: #e8f5e9; }         /* 薄荷绿 */
+	.olive { background: #dcedc8; --theme-color: #dcedc8; }       /* 橄榄绿 */
+	.teal { background: #e0f2f1; --theme-color: #e0f2f1; }         /* 青瓷 */
+
+	/* 蓝色系 */
+	.bg-cloud { background: #e8f4f8; --theme-color: #e8f4f8; }      /* 云白 */
+	.sky { background: #e3f2fd; --theme-color: #e3f2fd; }          /* 天蓝 */
+	.ocean { background: #e1f5fe; --theme-color: #e1f5fe; }        /* 海洋蓝 */
+
+	/* 紫色系 */
+	.lavender { background: #f3e5f5; --theme-color: #f3e5f5; }     /* 薰衣草紫 */
+	.wisteria { background: #ede7f6; --theme-color: #ede7f6; }     /* 紫藤 */
+
+	/* 灰色系 */
+	.foggy { background: #f5f5f5; --theme-color: #f5f5f5; }        /* 雾霾灰 */
+
 
     /* --- 菜单与侧边栏 --- */
     #menu {
@@ -366,7 +387,7 @@
                 </div>
             </div>
         </div>
-        <div class="foot">© 2023 by <a href="https://blog.shici.onine/"> 有Bing呀 </a> . All rights reserved.</div>
+        <div class="foot">© 2026 by <a href="http://2026.shici.online/"> 有Bing呀 </a> . All rights reserved.</div>
     </div>
 
     <script>
@@ -462,8 +483,14 @@
     document.addEventListener('DOMContentLoaded', function() {
         
         /* --- 4.1 随机背景 --- */
-        const bgs = ['bg-lotus', 'bg-apricot', 'bg-bamboo', 'bg-cloud', 'bg-peach', 'bg-autumn'];
-        document.body.classList.add(bgs[Math.floor(Math.random() * bgs.length)]);
+		const bgs = [
+			'bg-lotus', 'bg-apricot', 'bg-peach', 'bg-autumn', 'sunset', 'goose', 'rose',
+			'bg-bamboo', 'mint', 'olive', 'teal',
+			'bg-cloud', 'sky', 'ocean',
+			'lavender', 'wisteria', 'foggy'
+		];
+		document.body.classList.add(bgs[Math.floor(Math.random() * bgs.length)]);
+
 
         /* --- 4.2 诗词加载 --- */
         if (typeof jinrishici !== 'undefined') {
