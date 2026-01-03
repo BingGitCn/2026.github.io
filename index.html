@@ -7,8 +7,6 @@
   <title>有Bing呀 · 搜一下</title>
    
  
-  <!-- 引入诗词接口 -->
-  <script src="https://sdk.jinrishici.com/v2/browser/jinrishici.js" charset="utf-8"></script>
 
   <style>
     /* --- 基础设置 --- */
@@ -493,19 +491,24 @@
 		document.body.classList.add(bgs[Math.floor(Math.random() * bgs.length)]);
 
 
-        /* --- 4.2 诗词加载 --- */
-        if (typeof jinrishici !== 'undefined') {
-            jinrishici.load(function(result) {
-                if(result.status === 'success' && result.data) {
-                    const sentenceEl = document.getElementById('poem_sentence');
-                    const infoEl = document.getElementById('poem_info');
-                    if(sentenceEl && infoEl) {
-                        sentenceEl.textContent = result.data.content;
-                        infoEl.textContent = `【${result.data.origin.dynasty}】${result.data.origin.author}`;
-                    }
-                }
-            });
-        }
+        /* --- 4.2 一言加载 --- */
+		// 通过API获取随机句子
+		fetch('https://v1.hitokoto.cn')
+			.then(response => response.json())
+			.then(result => {
+				const sentenceEl = document.getElementById('poem_sentence');
+				const infoEl = document.getElementById('poem_info');
+				if(sentenceEl && infoEl) {
+					sentenceEl.textContent = result.hitokoto;
+					// 显示出处信息（作者/来源）
+					const fromWho = result.from_who || result.from || '';
+					infoEl.textContent = fromWho ? `—— ${fromWho}` : '';
+				}
+			})
+			.catch(error => {
+				console.error('一言加载失败:', error);
+			});
+
 
         /* --- 4.3 搜索引擎切换 --- */
         const engineTags = document.querySelectorAll('.engine-tag');
