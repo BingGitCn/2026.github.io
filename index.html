@@ -2,34 +2,31 @@
 <html lang="zh-CN">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+  <!-- 禁止用户手动缩放，但适配系统DPI缩放 -->
+  <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, viewport-fit=cover">
   <meta http-equiv="Cache-Control" content="no-siteapp">
   <title>有Bing呀 · 搜一下</title>
    
- 
-
   <style>
     /* --- 基础设置 --- */
     * { padding: 0; margin: 0; outline: none; -webkit-tap-highlight-color: transparent; box-sizing: border-box; } 
     
     html, body {
-    width: 100%; height: 100%;
-    position: relative; overflow: hidden;
+    width: 100%; 
+    /* 优化点1：使用 min-height 确保撑满屏幕，同时允许内容溢出时滚动 */
+    min-height: 100vh; 
+    position: relative; 
+    overflow-x: hidden; /* 仅隐藏横向溢出 */
     background: #f3e9d2; 
     font-weight: 400;
     color: #333;
     --theme-color: #f3e9d2;
 	}
 
-    
     /* 诗词专用字体 */
-      .calligraphy-font {
-      font-family: 
-          "KaiTi",
-          "楷体",
-          cursive;
-  }
-
+    .calligraphy-font {
+      font-family: "KaiTi", "楷体", cursive;
+    }
 
     form, input, button { padding: 0; margin: 0; border: none; outline: none; background: none; }
     ul, li { display: block; list-style: none; }
@@ -38,62 +35,49 @@
     .icon-svg { width: 1em; height: 1em; fill: currentColor; vertical-align: middle; margin-right: 4px; }
 
     /* --- 背景色 --- */
-	/* 暖色系 */
-	.bg-lotus { background: #f3e9d2; --theme-color: #f3e9d2; }      /* 莲花米 */
-	.bg-apricot { background: #e0d7c5; --theme-color: #e0d7c5; }   /* 杏色 */
-	.bg-peach { background: #fde2e4; --theme-color: #fde2e4; }     /* 桃粉 */
-	.bg-autumn { background: #ead2ac; --theme-color: #ead2ac; }   /* 秋黄 */
-	.sunset { background: #ffecd2; --theme-color: #ffecd2; }        /* 夕阳橙 */
-	.goose { background: #fef9e7; --theme-color: #fef9e7; }        /* 鹅黄 */
-	.rose { background: #fce4ec; --theme-color: #fce4ec; }         /* 玫瑰粉 */
-
-	/* 绿色系 */
-	.bg-bamboo { background: #d4e4bc; --theme-color: #d4e4bc; }    /* 竹绿 */
-	.mint { background: #e8f5e9; --theme-color: #e8f5e9; }         /* 薄荷绿 */
-	.olive { background: #dcedc8; --theme-color: #dcedc8; }       /* 橄榄绿 */
-	.teal { background: #e0f2f1; --theme-color: #e0f2f1; }         /* 青瓷 */
-
-	/* 蓝色系 */
-	.bg-cloud { background: #e8f4f8; --theme-color: #e8f4f8; }      /* 云白 */
-	.sky { background: #e3f2fd; --theme-color: #e3f2fd; }          /* 天蓝 */
-	.ocean { background: #e1f5fe; --theme-color: #e1f5fe; }        /* 海洋蓝 */
-
-	/* 紫色系 */
-	.lavender { background: #f3e5f5; --theme-color: #f3e5f5; }     /* 薰衣草紫 */
-	.wisteria { background: #ede7f6; --theme-color: #ede7f6; }     /* 紫藤 */
-
-	/* 灰色系 */
-	.foggy { background: #f5f5f5; --theme-color: #f5f5f5; }        /* 雾霾灰 */
-
+	.bg-lotus { background: #f3e9d2; --theme-color: #f3e9d2; }
+	.bg-apricot { background: #e0d7c5; --theme-color: #e0d7c5; }
+	.bg-peach { background: #fde2e4; --theme-color: #fde2e4; }
+	.bg-autumn { background: #ead2ac; --theme-color: #ead2ac; }
+	.sunset { background: #ffecd2; --theme-color: #ffecd2; }
+	.goose { background: #fef9e7; --theme-color: #fef9e7; }
+	.rose { background: #fce4ec; --theme-color: #fce4ec; }
+	.bg-bamboo { background: #d4e4bc; --theme-color: #d4e4bc; }
+	.mint { background: #e8f5e9; --theme-color: #e8f5e9; }
+	.olive { background: #dcedc8; --theme-color: #dcedc8; }
+	.teal { background: #e0f2f1; --theme-color: #e0f2f1; }
+	.bg-cloud { background: #e8f4f8; --theme-color: #e8f4f8; }
+	.sky { background: #e3f2fd; --theme-color: #e3f2fd; }
+	.ocean { background: #e1f5fe; --theme-color: #e1f5fe; }
+	.lavender { background: #f3e5f5; --theme-color: #f3e5f5; }
+	.wisteria { background: #ede7f6; --theme-color: #ede7f6; }
+	.foggy { background: #f5f5f5; --theme-color: #f5f5f5; }
 
     /* --- 菜单与侧边栏 --- */
     #menu {
-        position: absolute; right: 10px; top: 10px; z-index: 2000;
+        position: fixed; /* 改为 fixed 防止滚动时位置变动 */
+        right: 10px; top: 10px; z-index: 2000;
         cursor: pointer; transition: 0.3s;
         display: flex; align-items: center; justify-content: center;
-        background: rgba(255,255,255, 0.4); 
+        background: rgba(255,255,255, 0.6); 
         backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
         padding: 0 15px; border-radius: 25px;
         height: 40px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); font-size: 14px; color: #555; font-weight: bold; 
         border: 1px solid rgba(255, 255, 255, 0.6);
     }
     #menu svg { width: 20px; height: 20px; fill: #555; margin-right: 5px; transition: 0.3s; }
-    #menu.on { 
-        background: rgba(255, 255, 255, 0.6); 
-        color: #8b4513; 
-        border-color: #8b4513;
-    }
+    #menu.on { background: rgba(255, 255, 255, 0.8); color: #8b4513; border-color: #8b4513; }
     #menu.on svg { fill: #8b4513; transform: rotate(90deg); }
 
     .list {
-        width: 300px; height: 100%; overflow: hidden; overflow-y: auto;
-        position: absolute; right: 0; top: 0; z-index: 1900;
-        background: rgba(255, 255, 255, 0.7); 
-        backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px);
-        border-left: 1px solid rgba(255, 255, 255, 0.8); box-shadow: -5px 0 15px rgba(0,0,0,0.05);
+        width: 300px; height: 100vh; overflow-y: auto;
+        position: fixed; right: 0; top: 0; z-index: 1900;
+        background: rgba(255, 255, 255, 0.85); 
+        backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+        border-left: 1px solid rgba(255, 255, 255, 0.9); box-shadow: -5px 0 15px rgba(0,0,0,0.05);
         transition: 0.3s all ease;
     }
-    .list.closed { right: -320px; } 
+    .list.closed { transform: translateX(100%); } /* 使用 transform 性能更好 */
     .list ul { width: 280px; padding: 20px 0; margin-bottom: 20px; margin-left: 10px; }
     .list ul li {
         float: left; margin: 5px; width: 110px; height: 36px;
@@ -101,13 +85,9 @@
     }
     .list ul li a {
         width: 100%; border-radius: 18px; transition: 0.2s; height: 100%;
-        display: block; color: #333; font-weight: 500; background: rgba(255,255,255, 0.4); text-align: left; padding-left: 10px;
+        display: block; color: #333; font-weight: 500; background: rgba(255,255,255, 0.5); text-align: left; padding-left: 10px;
     }
-    .list ul li:hover a { 
-        background: rgba(139, 69, 19, 0.1); 
-        color: #8b4513; 
-        border: 1px solid rgba(139, 69, 19, 0.2);
-    }
+    .list ul li:hover a { background: rgba(139, 69, 19, 0.1); color: #8b4513; border: 1px solid rgba(139, 69, 19, 0.2); }
     .list ul li.title {
         width: 100%; height: 40px; line-height: 40px; margin: 10px 0;
         text-align: left; padding-left: 10px; border-bottom: 1px solid rgba(0,0,0,0.05);
@@ -116,16 +96,16 @@
 
     /* --- 主内容区域 --- */
     #content {
-        width: 100%; height: 100%;
+        width: 100%; 
+        min-height: 100vh; /* 适配高度 */
         position: relative; z-index: 10;
         display: flex; flex-direction: column;
-        justify-content: center; align-items: center;
-        padding-bottom: 80px;
-        /* 修改点1：移除右侧padding，确保绝对居中 */
-        padding-right: 0; 
+        justify-content: flex-start; /* 关键：顶部对齐，避免缩放时内容被挤下屏幕 */
+        align-items: center;
+        padding-bottom: 40px;
+        padding-top: 80px; /* 预留足够空间给菜单栏和系统缩放偏移 */
     }
     
-    /* 包裹容器，确保内部元素整体居中 */
     .con {
         display: flex;
         flex-direction: column;
@@ -133,13 +113,13 @@
         width: 100%;
     }
 
-    .shlogo { width: 100%; text-align: center; margin-bottom: 15px; }
-    .poem-sentence { font-size: 32px; color: #2c3e50; letter-spacing: 2px; margin-bottom: 5px; text-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+    .shlogo { width: 100%; text-align: center; margin-bottom: 10px; padding: 0 20px;}
+    .poem-sentence { font-size: clamp(20px, 5vw, 32px); color: #2c3e50; letter-spacing: 2px; margin-bottom: 5px; text-shadow: 0 2px 4px rgba(0,0,0,0.05); }
     .poem-info { font-size: 15px; color: #666; }
 
     /* --- 搜索框 --- */
     .sou {
-        max-width: 680px; width: 90%; min-width: 320px;
+        max-width: 680px; width: 90%; 
         margin: 10px auto; position: relative; z-index: 20;
     }
     .sou form { width: 100%; height: 50px; display: block; margin: 10px auto 20px; position: relative; }
@@ -149,14 +129,10 @@
         background: rgba(255, 255, 255, 0.4); 
         box-shadow: 0 4px 15px rgba(0,0,0,0.05); transition: all 0.3s;
     }
-    .sou form .wd:focus { 
-        background: rgba(255, 255, 255, 0.6); 
-        box-shadow: 0 4px 20px rgba(0,0,0,0.1); 
-        border-color: #fff;
-    }
+    .sou form .wd:focus { background: rgba(255, 255, 255, 0.6); box-shadow: 0 4px 20px rgba(0,0,0,0.1); border-color: #fff; }
     .sou-btn { position: absolute; right: 15px; top: 50%; transform: translateY(-50%); cursor: pointer; color: #8b4513; font-size: 18px; }
     
-    .sou ul { height: 40px; margin: 0 auto; display: flex; justify-content: center; gap: 10px; }
+    .sou ul { height: auto; margin: 0 auto; display: flex; justify-content: center; gap: 10px; flex-wrap: wrap; }
     .sou ul li {
         padding: 0 20px; height: 36px; line-height: 36px; text-align: center; cursor: pointer;
         background: rgba(255, 255, 255, 0.3); 
@@ -165,7 +141,6 @@
         display: flex; align-items: center; justify-content: center;
     }
     .sou ul li svg { margin-right: 5px; width: 16px; height: 16px; fill: currentColor; }
-    
     .sou ul li:hover { background: rgba(255, 255, 255, 0.5); }
     .sou ul li.active {
         background: rgba(139, 69, 19, 0.1); 
@@ -182,34 +157,29 @@
         border: 1px solid rgba(255, 255, 255, 0.6); 
         border-radius: 20px;
         padding: 20px; box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.05); color: #444;
-        /* 修改点2：添加自适应限制 */
         flex: 1 1 auto;
         width: 100%;
     }
     
     /* 日历 */
     .calendar-panel { max-width: 600px; } 
-    .cal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
+    .cal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
     .cal-title { font-weight: bold; font-size: 1.1rem; }
     .cal-nav-btn {
         width: 28px; height: 28px; border-radius: 50%; border: 1px solid rgba(0,0,0,0.1); background: rgba(255, 255, 255, 0.5); cursor: pointer; color: #555; transition: 0.2s;
     }
     .cal-nav-btn:hover { background: rgba(139, 69, 19, 0.2); color: #8b4513; border-color: rgba(139, 69, 19, 0.4); }
     .cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); text-align: center; font-size: 12px; }
-    .cal-weekday { padding-bottom: 8px; color: #777; font-size: 0.8rem; }
+    .cal-weekday { padding-bottom: 5px; color: #777; font-size: 0.8rem; }
     .cal-day {
         aspect-ratio: 1; display: flex; flex-direction: column; align-items: center; justify-content: center;
-        border-radius: 12px; cursor: pointer; transition: 0.2s; font-size: 0.95rem; color: #333;
-        /* 默认不加粗 */
-        font-weight: normal; 
+        border-radius: 10px; cursor: pointer; transition: 0.2s; font-size: 0.9rem; color: #333;
+        font-weight: normal; padding: 2px;
     }
     .cal-day:hover { background: rgba(255, 255, 255, 0.6); }
-    /* 修改点3：只有今天加粗 */
     .cal-day.today { background: rgba(139, 69, 19, 0.15); color: #8b4513; font-weight: bold; box-shadow: 0 0 0 1px rgba(139, 69, 19, 0.2); }
-    
-    /* 修改点3：农历初一不再加粗 */
     .cal-day.lunar-first { color: #d35400; } 
-    .cal-lunar { font-size: 0.7rem; color: #888; margin-top: 2px; }
+    .cal-lunar { font-size: 0.65rem; color: #888; margin-top: 1px; }
     .cal-day.today .cal-lunar { color: #8b4513; }
 
     /* 时间板块 */
@@ -225,7 +195,7 @@
     }
     .time-date { color: #888; font-size: 0.9rem; margin-top: 5px; }
 
-    .foot { position: absolute; bottom: 10px; z-index: 100; text-align: center; width: 100%; color: #999; font-size: 12px; }
+    .foot { margin-top: 30px; text-align: center; width: 100%; color: #999; font-size: 12px; padding-bottom: 20px;}
 
     /* --- 山峦背景 --- */
     .landscape-container {
@@ -250,32 +220,36 @@
 
     /* --- 响应式调整 --- */
 	@media (max-width: 768px) {
-		/* 强制换行，自适应列宽 */
-		.dashboard-container { 
-			flex-direction: column; 
-			padding-bottom: 20px; 
-			align-items: center; 
-		}
+		.dashboard-container { flex-direction: column; align-items: center; width: 95%; }
 		.glass-card { width: 100%; max-width: 100%; }
-		
 		.list { width: 260px; }
-		.list ul { width: 250px; }
 		.sou ul li { padding: 0 12px; font-size: 12px; }
 		.poem-sentence { font-size: 20px; }
 		.time-clock { font-size: 2.5rem; }
 		#menu { width: 40px; padding: 0 10px; }
 		#menu span { display: none; }
-
-		/* ---------------------------------------------------- */
-		/* 【新增部分】修复手机端顶部文字不显示的问题 */
-		/* ---------------------------------------------------- */
-		#content {
-			justify-content: flex-start; /* 改为从顶部开始排列，而不是垂直居中 */
-			padding-top: 30px;           /* 增加顶部内边距，防止内容紧贴状态栏 */
-		}
-		/* ---------------------------------------------------- */
 	}
 
+    /* --- 针对 150% 缩放/矮屏的特别优化 --- */
+    @media (max-height: 650px) {
+        #content { padding-top: 40px; } /* 减少顶部留白 */
+        .shlogo { margin-bottom: 5px; }
+        .poem-sentence { font-size: 24px; }
+        .sou form { height: 44px; margin: 5px auto 15px; }
+        
+        .dashboard-container { gap: 10px; margin-top: 5px; }
+        .glass-card { padding: 15px; }
+        
+        .time-panel { max-width: 100%; flex-direction: row; justify-content: space-around; }
+        .time-clock { font-size: 2.2rem; }
+        .time-ganzhi { font-size: 1.1rem; margin: 0 10px; }
+        .time-date { display: none; } /* 隐藏次要信息以节省空间 */
+        
+        .cal-day { font-size: 0.8rem; padding: 0; }
+        .cal-lunar { font-size: 0.6rem; }
+        
+        .foot { display: none; } /* 隐藏底部版权以节省垂直空间 */
+    }
   </style>
 </head>
 <body>
@@ -285,7 +259,6 @@
     </div>
 <div class="list closed">
   <ul>
-    <!-- AI 助手 -->
     <li class="title">AI 助手</li>
     <li><a href="https://www.qianwen.com/" target="_blank">通义千问</a></li>
     <li><a href="https://chatglm.cn/" target="_blank">智谱清言</a></li>
@@ -294,50 +267,43 @@
     <li><a href="https://claude.ai/" target="_blank">Claude</a></li>
     <li><a href="https://chatgpt.com/" target="_blank">ChatGPT</a></li>
 
-    <!-- 热点资讯 -->
     <li class="title">热点资讯</li>
     <li><a href="https://rebang.today/" target="_blank">今日热榜</a></li>
     <li><a href="https://tophub.today/" target="_blank">今日热榜</a></li>
     <li><a href="https://www.zhihu.com/" target="_blank">知乎</a></li>
     <li><a href="https://www.bilibili.com/" target="_blank">哔哩哔哩</a></li>
 
-    <!-- 开发者社区 -->
     <li class="title">开发者社区</li>
     <li><a href="https://github.com/" target="_blank">GitHub</a></li>
     <li><a href="https://www.v2ex.com/" target="_blank">V2EX</a></li>
     <li><a href="https://stackoverflow.com/" target="_blank">Stack Overflow</a></li>
     <li><a href="https://juejin.cn/" target="_blank">掘金</a></li>
-    <li><a href="https://www.csdn.net/" target="_blank">CSDN</a></li>  <!-- 已修正 -->
+    <li><a href="https://www.csdn.net/" target="_blank">CSDN</a></li>
 
-    <!-- 实用工具 -->
     <li class="title">实用工具</li>
     <li><a href="https://cn.bing.com/dict" target="_blank">Bing词典</a></li>
     <li><a href="https://www.remove.bg/" target="_blank">Remove.bg</a></li>
     <li><a href="https://smallpdf.com/cn" target="_blank">Smallpdf</a></li>
     <li><a href="https://www.iconfont.cn/" target="_blank">Iconfont</a></li> 
 
-    <!-- 购物平台 -->
     <li class="title">购物平台</li>
     <li><a href="https://www.taobao.com/" target="_blank">淘宝</a></li>
     <li><a href="https://www.jd.com/" target="_blank">京东</a></li>
     <li><a href="https://www.pinduoduo.com/" target="_blank">拼多多</a></li>
 
-    <!-- 学习资源 -->
     <li class="title">学习资源</li>
     <li><a href="https://www.coursera.org/" target="_blank">Coursera</a></li>
     <li><a href="https://www.bilibili.com/mooc/" target="_blank">B站课堂</a></li>
     <li><a href="https://www.icourse163.org/" target="_blank">中国大学MOOC</a></li>
     <li><a href="https://www.khanacademy.org/" target="_blank">可汗学院</a></li>
 
-    <!-- 效率办公 -->
     <li class="title">效率办公</li>
     <li><a href="https://docs.qq.com/" target="_blank">腾讯文档</a></li>
-    <li><a href="https://www.feishu.cn/" target="_blank">飞书</a></li>  <!-- 已修正 -->
+    <li><a href="https://www.feishu.cn/" target="_blank">飞书</a></li>
     <li><a href="https://www.yuque.com/" target="_blank">语雀</a></li>
     <li><a href="https://notion.so/" target="_blank">Notion</a></li>
   </ul>
 </div>
-
 
     <div class="landscape-container">
         <div class="mountain-layer layer-1"></div>
@@ -394,10 +360,7 @@
     </div>
 
     <script>
-    // --- 1. 调试信息 ---
     console.log('Script Loaded Successfully!');
-
-    // --- 1.1 全局辅助函数 ---
     const solarMonth = ["正", "二", "三", "四", "五", "六", "七", "八", "九", "十", "冬", "腊"];
     const tianGan = ["甲", "乙", "丙", "丁", "戊", "己", "庚", "辛", "壬", "癸"];
     const diZhi = ["子", "丑", "寅", "卯", "辰", "巳", "午", "未", "申", "酉", "戌", "亥"];
@@ -412,7 +375,6 @@
         return '廿' + tian[d - 20];
     }
 
-    // --- 2. 农历算法模块 ---
     const LunarCalendar = (function() {
         const lunarInfo = [
             0x04bd8, 0x04ae0, 0x0a570, 0x054d5, 0x0d260, 0x0d950, 0x16554, 0x056a0, 0x09ad0, 0x055d2, 
@@ -451,7 +413,6 @@
         return { fromDate: function(date) { return solar2lunar(date.getFullYear(), date.getMonth() + 1, date.getDate()); } };
     })();
 
-    // --- 3. 节气计算 (简化版) ---
     function getSolarTerm(month, day) {
         const terms = ["小寒", "大寒", "立春", "雨水", "惊蛰", "春分", "清明", "谷雨", "立夏", "小满", "芒种", "夏至", "小暑", "大暑", "立秋", "处暑", "白露", "秋分", "寒露", "霜降", "立冬", "小雪", "大雪", "冬至"];
         let idx = -1;
@@ -482,10 +443,8 @@
         return idx !== -1 ? terms[idx] : null;
     }
 
-    // --- 4. 页面加载完成后执行 ---
     document.addEventListener('DOMContentLoaded', function() {
         
-        /* --- 4.1 随机背景 --- */
 		const bgs = [
 			'bg-lotus', 'bg-apricot', 'bg-peach', 'bg-autumn', 'sunset', 'goose', 'rose',
 			'bg-bamboo', 'mint', 'olive', 'teal',
@@ -494,9 +453,6 @@
 		];
 		document.body.classList.add(bgs[Math.floor(Math.random() * bgs.length)]);
 
-
-        /* --- 4.2 一言加载 --- */
-		// 通过API获取随机句子
 		fetch('https://v1.hitokoto.cn')
 			.then(response => response.json())
 			.then(result => {
@@ -504,17 +460,12 @@
 				const infoEl = document.getElementById('poem_info');
 				if(sentenceEl && infoEl) {
 					sentenceEl.textContent = result.hitokoto;
-					// 显示出处信息（作者/来源）
 					const fromWho = result.from_who || result.from || '';
 					infoEl.textContent = fromWho ? `—— ${fromWho}` : '';
 				}
 			})
-			.catch(error => {
-				console.error('一言加载失败:', error);
-			});
+			.catch(error => { console.error('一言加载失败:', error); });
 
-
-        /* --- 4.3 搜索引擎切换 --- */
         const engineTags = document.querySelectorAll('.engine-tag');
         const searchForm = document.getElementById('searchForm');
         const searchInput = document.getElementById('searchInput');
@@ -537,7 +488,6 @@
             });
         }
 
-        /* --- 4.4 菜单逻辑 --- */
         const menu = document.getElementById('menu');
         const list = document.querySelector('.list');
         if(menu && list) {
@@ -547,7 +497,6 @@
             });
         }
 
-        /* --- 4.5 日历逻辑 --- */
         let cMonth = new Date().getMonth();
         let cYear = new Date().getFullYear();
         
@@ -587,7 +536,6 @@
         if(nextBtn) nextBtn.addEventListener('click', () => { cMonth++; if(cMonth>11){cMonth=0;cYear++;}renderCal(cYear,cMonth); });
         if(todayBtn) todayBtn.addEventListener('click', () => { const n=new Date(); cYear=n.getFullYear(); cMonth=n.getMonth(); renderCal(cYear,cMonth); });
 
-        /* --- 4.6 时间板块逻辑 --- */
         function initTime() {
             const clockEl = document.getElementById('clockDisplay');
             const ganzhiEl = document.getElementById('ganzhiDisplay');
